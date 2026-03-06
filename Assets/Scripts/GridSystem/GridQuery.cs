@@ -28,35 +28,28 @@ public class GridQuery<T>
         return neighbors;
     }
 
-    public List<GridPosition> GetCurrentRow(GridPosition pos) {
-
-        List<GridPosition> neighbors = new List<GridPosition>();
-       
-        for(int x = pos.X;x<=gridSystem.width;x++)
-
-        {
-            GridPosition newPos = new GridPosition(x, pos.Y);
-            if (gridSystem.IsValidPosition(newPos) && !gridSystem.IsEmpty(newPos))
-                neighbors.Add(newPos);
-
-        }
-        return neighbors;
-    }
-    public List<GridPosition> GetCurrentColumn(GridPosition pos)
+    public List<GridPosition> GetRow(GridPosition pos)
     {
+        List<GridPosition> row = new List<GridPosition>();
 
-        List<GridPosition> neighbors = new List<GridPosition>();
+        row.AddRange(ScanDirection(pos, GridDirections.Left));
+        row.Add(pos);
+        row.AddRange(ScanDirection(pos, GridDirections.Right));
 
-        for (int y = pos.Y; y <= gridSystem.height; y++)
-
-        {
-            GridPosition newPos = new GridPosition(pos.X, y);
-            if (gridSystem.IsValidPosition(newPos) && !gridSystem.IsEmpty(newPos))
-                neighbors.Add(newPos);
-
-        }
-        return neighbors;
+        return row;
     }
+
+    public List<GridPosition> GetColumn(GridPosition pos)
+    {
+        List<GridPosition> column = new List<GridPosition>();
+
+        column.AddRange(ScanDirection(pos, GridDirections.Up));
+        column.Add(pos);
+        column.AddRange(ScanDirection(pos, GridDirections.Down));
+
+        return column;
+    }
+
 
     public List<GridPosition> ScanDirection(
     GridPosition start,

@@ -60,7 +60,7 @@ public class GridItemPlacement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.A))
         {
             GridPosition gridPosition = new GridPosition(1, 1);
-            List<GridPosition> neighbours = gridQuery.GetCurrentRow(gridPosition);
+            List<GridPosition> neighbours = gridQuery.GetRow(gridPosition);
             for (int i = 0; i < neighbours.Count; i++)
             {
                 Debug.Log("Color Block Removed !" + neighbours[i].ToString());

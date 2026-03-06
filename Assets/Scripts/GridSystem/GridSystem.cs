@@ -27,15 +27,15 @@ public class GridSystem<T>
             {
                 grid[x, y] = new GridNode<T>(new GridPosition(x, y));
 
-                DrawLine(new Vector3(grid[x,y].Position.X, 0F, grid[x, y].Position.Y) + origin, new Vector3(grid[x, y].Position.X, 0F, grid[x, y].Position.Y + 1) + origin);
+                DrawLine(new Vector3(grid[x,y].Position.X*cellSize, 0F, grid[x, y].Position.Y*cellSize) + origin, new Vector3(grid[x, y].Position.X * cellSize, 0F, (grid[x, y].Position.Y + 1)*cellSize) + origin);
 
-            DrawLine(new Vector3(grid[x, y].Position.X, 0F, grid[x, y].Position.Y) + origin, new Vector3(grid[x, y].Position.X + 1, 0F, grid[x, y].Position.Y) + origin);
+            DrawLine(new Vector3(grid[x, y].Position.X * cellSize, 0F, grid[x, y].Position.Y * cellSize) + origin, new Vector3((grid[x, y].Position.X + 1) * cellSize, 0F, grid[x, y].Position.Y * cellSize) + origin);
 
 
             }
 
-            DrawLine(new Vector3(width, 0F, 0) + origin, new Vector3(width, 0F, height)+origin);
-           DrawLine(new Vector3(0f, 0F, height) + origin, new Vector3(width, 0F, height)+origin);
+            DrawLine(new Vector3(width, 0F, 0) * cellSize + origin, new Vector3(width, 0F, height) * cellSize +origin);
+           DrawLine(new Vector3(0f, 0F, height) * cellSize + origin, new Vector3(width, 0F, height) * cellSize +origin);
        
 
 
