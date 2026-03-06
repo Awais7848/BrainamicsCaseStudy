@@ -11,11 +11,12 @@ public class GridItemPlacement : MonoBehaviour
     [SerializeField] ColorBlock colorBlockPrefab;
     [SerializeField] GameObject pointer;
     GridSystem<ColorBlock> sampleGrid;
+    GridQuery<ColorBlock> gridQuery;
     private void Start()
     {
 
         sampleGrid = new GridSystem<ColorBlock>(gridWidth,gridHeight,cellSize,origin);
-
+        gridQuery = new GridQuery<ColorBlock>(sampleGrid);
 
     }
 
@@ -36,13 +37,14 @@ public class GridItemPlacement : MonoBehaviour
                     ColorBlock obj = Instantiate(colorBlockPrefab, sampleGrid.GridToWorld(gridPosition), Quaternion.identity);
                     obj.name = "Cube" + gridPosition.ToString();
                     sampleGrid.SetItem(gridPosition,obj);
+                    
                 }
-              
+                Debug.Log("Here !");
             }
         }
         if (Input.GetKeyDown(KeyCode.B) ){
             GridPosition gridPosition = new GridPosition(0, 1);
-           List<GridPosition> neighbours= sampleGrid.GetNeighbors(gridPosition);
+           List<GridPosition> neighbours= gridQuery.GetNeighbors(gridPosition,GridDirections.Diaognal);
 
             for (int i = 0; i < neighbours.Count; i++)
             {

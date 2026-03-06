@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1009393856504895967}
   - component: {fileID: 1083169741766534088}
   - component: {fileID: 5089363354137842719}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -123,3 +123,6 @@ MonoBehaviour:
   normalMaterial: {fileID: 2100000, guid: ddbd8abad8796924b8fc8c639d0d20f6, type: 2}
   renderer: {fileID: 1009393856504895967}
   MouseSelected: 0
+  IgnoreMask:
+    serializedVersion: 2
+    m_Bits: 55

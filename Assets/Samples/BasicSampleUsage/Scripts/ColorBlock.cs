@@ -16,6 +16,8 @@ public class ColorBlock : MonoBehaviour
 
     [SerializeField]bool MouseSelected;
 
+    [SerializeField] LayerMask IgnoreMask;
+
     private void Awake()
     {
         renderer = GetComponent<MeshRenderer>();
@@ -33,7 +35,15 @@ public class ColorBlock : MonoBehaviour
     }
     private void Update()
     {
-        
+        if (MouseSelected)
+        {
+            RaycastHit hit; transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+           if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit,IgnoreMask))
+            {
+                transform.position =new Vector3( hit.point.x,0.5f,hit.point.y) ;
+            }
+           
+        }
     }
 
 }

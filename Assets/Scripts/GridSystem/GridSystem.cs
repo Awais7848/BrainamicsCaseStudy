@@ -42,7 +42,7 @@ public class GridSystem<T>
     }
 
 
-    public static void DrawLine(Vector3 startPosition, Vector3 endPosition)
+      void DrawLine(Vector3 startPosition, Vector3 endPosition)
     {
         Debug.DrawLine(startPosition, endPosition, Color.black, 100f);
     }
@@ -78,25 +78,9 @@ public class GridSystem<T>
         grid[pos.X, pos.Y].Clear();
     }
 
-    public List<GridPosition> GetNeighbors(GridPosition pos)
-    {
-        List<GridPosition> neighbors = new List<GridPosition>();
-        GridPosition[] directions = new GridPosition[]
-        {
-            new GridPosition(0,1),
-            new GridPosition(1,0),
-            new GridPosition(0,-1),
-            new GridPosition(-1,0)
-        };
 
-        foreach (var dir in directions)
-        {
-            GridPosition newPos = new GridPosition(pos.X + dir.X, pos.Y + dir.Y);
-            if (IsValidPosition(newPos))
-                neighbors.Add(newPos);
-        }
-        return neighbors;
-    }
+
+
 
     public GridPosition WorldToGrid(Vector3 worldPos, bool is3D = true)
     {
