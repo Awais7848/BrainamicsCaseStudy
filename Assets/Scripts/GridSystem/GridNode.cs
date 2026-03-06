@@ -9,6 +9,10 @@ public class GridNode<T>
     }
 
     public T GetItem() => item;
+
+
+    public bool IsEmpty => item==null;
+
     public void SetItem(T value) => item = value;
     public void Clear() => item = default;
 }

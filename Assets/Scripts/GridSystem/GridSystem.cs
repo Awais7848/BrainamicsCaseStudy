@@ -24,9 +24,29 @@ public class GridSystem<T>
     {
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
+            {
                 grid[x, y] = new GridNode<T>(new GridPosition(x, y));
+
+                DrawLine(new Vector3(grid[x,y].Position.X, 0F, grid[x, y].Position.Y) + origin, new Vector3(grid[x, y].Position.X, 0F, grid[x, y].Position.Y + 1) + origin);
+
+            DrawLine(new Vector3(grid[x, y].Position.X, 0F, grid[x, y].Position.Y) + origin, new Vector3(grid[x, y].Position.X + 1, 0F, grid[x, y].Position.Y) + origin);
+
+
+            }
+
+            DrawLine(new Vector3(width, 0F, 0) + origin, new Vector3(width, 0F, height)+origin);
+           DrawLine(new Vector3(0f, 0F, height) + origin, new Vector3(width, 0F, height)+origin);
+       
+
+
     }
 
+
+    public static void DrawLine(Vector3 startPosition, Vector3 endPosition)
+    {
+        Debug.DrawLine(startPosition, endPosition, Color.black, 100f);
+    }
+   
     public bool IsValidPosition(GridPosition pos)
         => pos.X >= 0 && pos.X < width && pos.Y >= 0 && pos.Y < height;
 
@@ -45,13 +65,19 @@ public class GridSystem<T>
         return grid[pos.X, pos.Y].GetItem();
     }
 
+    public bool IsEmpty(GridPosition pos)
+    {
+        if (!IsValidPosition(pos)) return default;
+        return grid[pos.X, pos.Y].IsEmpty;
+    }
+
+
     public void RemoveItem(GridPosition pos)
     {
         if (!IsValidPosition(pos)) return;
         grid[pos.X, pos.Y].Clear();
     }
 
-    // Neighbor query (orthogonal)
     public List<GridPosition> GetNeighbors(GridPosition pos)
     {
         List<GridPosition> neighbors = new List<GridPosition>();
@@ -72,7 +98,6 @@ public class GridSystem<T>
         return neighbors;
     }
 
-    // Converts world position to grid coordinates (works for 2D and 3D)
     public GridPosition WorldToGrid(Vector3 worldPos, bool is3D = true)
     {
         Vector3 relative = worldPos - origin;
@@ -81,7 +106,6 @@ public class GridSystem<T>
         return new GridPosition(x, y);
     }
 
-    // Converts grid coordinates to world position (center of cell)
     public Vector3 GridToWorld(GridPosition pos, bool is3D = true)
     {
         float x = origin.x + pos.X * cellSize + cellSize / 2f;
