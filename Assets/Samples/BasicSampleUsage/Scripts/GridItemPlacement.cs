@@ -56,5 +56,21 @@ public class GridItemPlacement : MonoBehaviour
             }
         
         }
+
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            GridPosition gridPosition = new GridPosition(1, 1);
+            List<GridPosition> neighbours = gridQuery.GetCurrentRow(gridPosition);
+            for (int i = 0; i < neighbours.Count; i++)
+            {
+                Debug.Log("Color Block Removed !" + neighbours[i].ToString());
+                ColorBlock tempColorBlock = sampleGrid.GetItem(neighbours[i]);
+                sampleGrid.RemoveItem(neighbours[i]);
+
+                Destroy(tempColorBlock.gameObject);
+            }
+
+        }
+
     }
 }

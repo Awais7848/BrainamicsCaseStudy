@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class GridSystem<T>
 {
-    private int width;
-    private int height;
+    public int width;
+    public int height;
     private float cellSize;
     private Vector3 origin;
     private GridNode<T>[,] grid;
