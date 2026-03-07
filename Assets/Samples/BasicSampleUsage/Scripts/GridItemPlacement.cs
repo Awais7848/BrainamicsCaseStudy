@@ -33,14 +33,30 @@ public class GridItemPlacement : MonoBehaviour
 
             if (sampleGrid.IsValidPosition(positionList[i]) && sampleGrid.IsEmpty(positionList[i]))
             {
-
+              
                 ColorBlock obj = Instantiate(colorBlockPrefab, sampleGrid.GridToWorld(positionList[i]), Quaternion.identity);
+                for (int j = 0; j < obj.shape.Length; j++)
+                {
+                    GridPosition validationPosition = positionList[i] + obj.shape[j];
+                    Debug.Log("Addition : "+positionList[i] +" + "+ obj.shape[j]+" = "+validationPosition.ToString());
+                    if (sampleGrid.IsValidPosition(validationPosition))
+                    {
+                    }
+                    else
+                    {
+
+                        Debug.Log("<color=red>Position is Not Valid Cant Place Shape</color>");
+                        obj.gameObject.SetActive(false);
+                    }
+                }
                 obj.name = "Cube" + positionList[i].ToString();
-                sampleGrid.SetItem(positionList[i], obj);
+              
 
             }
         }
     }
+
+
 
     private void Update()
     {
@@ -54,8 +70,8 @@ public class GridItemPlacement : MonoBehaviour
             {
              
                 selected = sampleGrid.WorldToGrid(hit.point, true);
-               // if (!sampleGrid.IsEmpty(selected))
 
+                Debug.Log("Selected Position  :" + selected.ToString());
 
                 if (!sampleGrid.IsEmpty(selected)){
                     selectedColorBlock = sampleGrid.GetItem(selected);

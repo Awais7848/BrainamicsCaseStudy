@@ -17,10 +17,12 @@ public class ColorBlock : MonoBehaviour
 
     [SerializeField]bool MouseSelected;
 
-    
+    public GridPosition[] shape;
+
+    public float shapeSize;
     private void Awake()
     {
-        renderer = GetComponent<MeshRenderer>();
+      //  renderer = GetComponent<MeshRenderer>();
     }
    
 
