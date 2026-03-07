@@ -3,23 +3,14 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-public enum BlockColor
-{
-    Blue, Green, Red,Yellow,Pink
-}
+
 public class ColorBlock : MonoBehaviour
 {
-    public Color color;
 
-    public Material selectedMaterial,normalMaterial;
+    public Material selectedMaterial,normalMaterial,highlightMaterial;
 
     [SerializeField] MeshRenderer renderer;
 
-    [SerializeField]bool MouseSelected;
-
-    public GridPosition[] shape;
-
-    public float shapeSize;
     private void Awake()
     {
       //  renderer = GetComponent<MeshRenderer>();
@@ -30,13 +21,16 @@ public class ColorBlock : MonoBehaviour
     public void Highlight()
     {
 
-        MouseSelected = true;
-        renderer.material = selectedMaterial;
+        renderer.material = highlightMaterial;
     }
     public void Normal()
     {
-        MouseSelected = false;
         renderer.material = normalMaterial;
+
+    }
+    public void Select()
+    {
+        renderer.material = selectedMaterial;
 
     }
 }

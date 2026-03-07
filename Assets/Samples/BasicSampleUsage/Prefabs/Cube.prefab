@@ -118,11 +118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 609434b88e817d445b3313972de9c281, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  color: {r: 0, g: 0, b: 0, a: 0}
-  selectedMaterial: {fileID: 2100000, guid: b61943ddbff53fb49a5efe69389d71d7, type: 2}
+  selectedMaterial: {fileID: 2100000, guid: 563214b8bda4deb4796064b412689e1b, type: 2}
   normalMaterial: {fileID: 2100000, guid: ddbd8abad8796924b8fc8c639d0d20f6, type: 2}
+  highlightMaterial: {fileID: 2100000, guid: b61943ddbff53fb49a5efe69389d71d7, type: 2}
   renderer: {fileID: 1009393856504895967}
-  MouseSelected: 0
-  IgnoreMask:
-    serializedVersion: 2
-    m_Bits: 55
