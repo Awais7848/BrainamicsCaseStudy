@@ -1,319 +1,193 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 
 public class GridInteraction : MonoBehaviour
 {
-    [SerializeField]int gridWidth, gridHeight;
+    [Header("Grid Settings")]
+    [SerializeField] int gridWidth, gridHeight;
     [SerializeField] float cellSize;
     [SerializeField] Vector3 origin;
+
+    [Header("References")]
     [SerializeField] ColorBlock colorBlockPrefab;
     [SerializeField] GameObject pointer;
+    [SerializeField] LayerMask ignoreMask;
 
-
-    [SerializeField]List<GridPosition> positionList;
-    
-    [SerializeField] LayerMask IgnoreMask;
-
-
-    ColorBlock selectedColorBlock;
-    GridPosition selected;
-    GridPosition newMovePosition;
+    private GridSystem<ColorBlock> grid;
+    private ColorBlock selectedColorBlock;
+    private GridPosition selected;
+    private GridPosition newMovePosition;
 
     private void Start()
     {
-
-    /*    for(int i = 0; i < positionList.Count; i++)
-        {
-
-            if (sampleGrid.IsValidPosition(positionList[i]) && sampleGrid.IsEmpty(positionList[i]))
-            {
-              
-                ColorBlock obj = Instantiate(colorBlockPrefab, sampleGrid.GridToWorld(positionList[i]), Quaternion.identity);
-                for (int j = 0; j < obj.shape.Length; j++)
-                {
-                    GridPosition validationPosition = positionList[i] + obj.shape[j];
-                    Debug.Log("Addition : "+positionList[i] +" + "+ obj.shape[j]+" = "+validationPosition.ToString());
-                    if (sampleGrid.IsValidPosition(validationPosition))
-                    {
-                    }
-                    else
-                    {
-
-                        Debug.Log("<color=red>Position is Not Valid Cant Place Shape</color>");
-                        obj.gameObject.SetActive(false);
-                    }
-                }
-                obj.name = "Cube" + positionList[i].ToString();
-              
-
-            }
-        }
-    */
+        grid = DemoGridManager.Grid; 
     }
-
-
 
     private void Update()
     {
-        SpawnGridElements();
-        SelectGridElement();
-        HighlightSelectedNeighbours();
-
-    
-
-
-
-        /* Grid Movement
-        if (Input.GetMouseButtonDown(0))
-        {
-            RaycastHit hit;
-
-
-            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, IgnoreMask))
-            {
-             
-                selected = DemoGridManager.Grid.WorldToGrid(hit.point, true);
-
-                Debug.Log("Selected Position  :" + selected.ToString());
-
-                if (!DemoGridManager.Grid.IsEmpty(selected)){
-                    selectedColorBlock = DemoGridManager.Grid.GetItem(selected);
-                    selectedColorBlock.Highlight();
-                }
-                    
-             }
-        }
-        */
-
-        /* Sample Grid Operations
-       
-                if (Input.GetMouseButton(0))
-                {
-                    RaycastHit hit;
-                    if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, IgnoreMask))
-                    {
-                        GridPosition nextGridPosition= sampleGrid.WorldToGrid(hit.point, true);
-
-                        if (sampleGrid.IsValidPosition(nextGridPosition))
-                            newMovePosition = nextGridPosition;
-
-                        if (selectedColorBlock!=null&&sampleGrid.IsValidPosition(newMovePosition)&&sampleGrid.IsEmpty(newMovePosition))
-                        sampleGrid.GetItem(selected).transform.position = sampleGrid.GridToWorld(newMovePosition);
-
-                    }
-
-
-
-
-                }
-
-                if (Input.GetMouseButtonUp(0))
-                {
-
-                    if (selectedColorBlock != null)
-                    {
-                        Debug.Log("Selected Position  :" + selected.ToString());
-                        sampleGrid.GetItem(selected).Normal();
-
-                        if (sampleGrid.IsValidPosition(newMovePosition))
-                        {
-                            sampleGrid.SetItem(newMovePosition, selectedColorBlock);
-                            sampleGrid.RemoveItem(selected);
-                            Debug.Log("Move Position  :" + newMovePosition.ToString());
-                            selectedColorBlock = null;
-                        }
-                    }
-                }
-
-                */
-
-
-        /*
-
-               
-
-                    if (Input.GetKeyDown(KeyCode.A))
-                {
-                    GridPosition gridPosition = new GridPosition(1, 1);
-                    List<GridPosition> neighbours = gridQuery.GetRow(gridPosition);
-                    for (int i = 0; i < neighbours.Count; i++)
-                    {
-                        Debug.Log("Color Block Removed !" + neighbours[i].ToString());
-                        ColorBlock tempColorBlock = sampleGrid.GetItem(neighbours[i]);
-                        sampleGrid.RemoveItem(neighbours[i]);
-
-                        Destroy(tempColorBlock.gameObject);
-                    }
-
-                }
-
-                */
-
-
+        HandleSpawn();
+        HandleSelect();
+        HandleMove();
+        HandleHighlight();
     }
 
+    #region Raycast Helpers
 
-
-
-    void SelectGridElement()
+    private bool TryGetMouseGridPosition(out GridPosition gridPos)
     {
-        if (Input.GetMouseButtonDown(0) && Input.GetKey(KeyCode.LeftControl))
+        gridPos = default;
+
+        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit, 100, ignoreMask))
         {
-            RaycastHit hit;
-            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, IgnoreMask))
-            {
-
-                selected = DemoGridManager.Grid.WorldToGrid(hit.point, true);
-
-
-                if (!DemoGridManager.Grid.IsEmpty(selected))
-                {
-
-                    selectedColorBlock = DemoGridManager.Grid.GetItem(selected);
-
-                    selectedColorBlock.Select();
-
-                }
-
-            }
+            gridPos = grid.WorldToGrid(hit.point, true);
+            return true;
         }
-
-
-
-
+        return false;
     }
 
-
-    void SpawnGridElements()
+    private bool TryGetBlock(GridPosition pos, out ColorBlock block)
     {
+        block = null;
+        if (grid.IsValidPosition(pos) && !grid.IsEmpty(pos))
+        {
+            block = grid.GetItem(pos);
+            return true;
+        }
+        return false;
+    }
 
+    #endregion
 
+    #region Spawn Blocks
+
+    private void HandleSpawn()
+    {
         if (Input.GetMouseButtonDown(0) && Input.GetKey(KeyCode.LeftShift))
         {
-            RaycastHit hit;
-            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, IgnoreMask))
+            if (TryGetMouseGridPosition(out GridPosition pos) && grid.IsEmpty(pos))
             {
-
-                selected = DemoGridManager.Grid.WorldToGrid(hit.point, true);
-
-
-                if (DemoGridManager.Grid.IsEmpty(selected))
-                {
-
-
-                    ColorBlock colorBlock = Instantiate(colorBlockPrefab, DemoGridManager.Grid.GridToWorld(selected), Quaternion.identity);
-                    DemoGridManager.Grid.SetItem(selected, colorBlock);
-
-                }
-
+                var block = Instantiate(colorBlockPrefab, grid.GridToWorld(pos), Quaternion.identity);
+                grid.SetItem(pos, block);
             }
         }
 
         if (Input.GetMouseButtonDown(1) && Input.GetKey(KeyCode.LeftShift))
         {
-            RaycastHit hit;
-            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, IgnoreMask))
+            if (TryGetMouseGridPosition(out GridPosition pos) && TryGetBlock(pos, out ColorBlock block))
             {
-
-                selected = DemoGridManager.Grid.WorldToGrid(hit.point, true);
-
-                if (DemoGridManager.Grid.IsValidPosition(selected) && !DemoGridManager.Grid.IsEmpty(selected))
-                {
-                    GridDebug.Assert("Item Removed At : " + selected.ToString());
-                    selectedColorBlock = DemoGridManager.Grid.GetItem(selected);
-                    DemoGridManager.Grid.RemoveItem(selected);
-                    Destroy(selectedColorBlock.gameObject);
-
-                }
-
+                grid.RemoveItem(pos);
+                Destroy(block.gameObject);
             }
-
         }
-
     }
 
+    #endregion
 
-    void HighlightSelectedNeighbours()
+    #region Select Blocks
+
+    private void HandleSelect()
     {
-
-        HighLightNeighbours(KeyCode.D, GridDirections.Diaognal);
-        HighLightNeighbours(KeyCode.O, GridDirections.Orthogonal);
-        HighlightRow(KeyCode.R);
-        HighlightColumn(KeyCode.C);
-
+        if (Input.GetMouseButtonDown(0) && Input.GetKey(KeyCode.LeftControl))
+        {
+            if (TryGetMouseGridPosition(out GridPosition pos) && TryGetBlock(pos, out ColorBlock block))
+            {
+                selected = pos;
+                selectedColorBlock = block;
+                block.Select();
+            }
+        }
     }
 
-    void HighlightRow(KeyCode keyCode)
+    #endregion
+
+    #region Move Blocks
+
+    private void HandleMove()
     {
-        if (Input.GetKeyDown(keyCode) && selectedColorBlock != null)
+        if (Input.GetMouseButtonDown(0) && Input.GetKey(KeyCode.LeftAlt))
         {
-            List<GridPosition> neighbours = DemoGridManager.GridQuery.GetRow(selected);
-
-            HighLightElements(neighbours, true);
-
+            if (TryGetMouseGridPosition(out GridPosition pos) && TryGetBlock(pos, out ColorBlock block))
+            {
+                selected = pos;
+                selectedColorBlock = block;
+                block.Highlight();
+                newMovePosition = pos; 
+            }
         }
 
-        if (Input.GetKeyUp(keyCode))
+        if (Input.GetMouseButton(0) && Input.GetKey(KeyCode.LeftAlt) && selectedColorBlock != null)
         {
-            List<GridPosition> neighbours = DemoGridManager.GridQuery.GetRow(selected);
+            if (TryGetMouseGridPosition(out GridPosition pos) && grid.IsValidPosition(pos) && grid.IsEmpty(pos))
+            {
+                newMovePosition = pos;
+                selectedColorBlock.transform.position = grid.GridToWorld(newMovePosition);
+            }
+        }
 
-            HighLightElements(neighbours, false);
+        if (Input.GetMouseButtonUp(0) && Input.GetKeyUp(KeyCode.LeftAlt)&&selectedColorBlock != null)
+        {
+            selectedColorBlock.Normal();
+            if (grid.IsValidPosition(newMovePosition))
+            {
+                grid.SetItem(newMovePosition, selectedColorBlock);
+                grid.RemoveItem(selected);
+            }
+            selectedColorBlock = null;
         }
     }
 
-    void HighlightColumn(KeyCode keyCode)
+    #endregion
+
+    #region Highlight Neighbours
+
+    private void HandleHighlight()
     {
-        if (Input.GetKeyDown(keyCode) && selectedColorBlock != null)
-        {
-            List<GridPosition> neighbours = DemoGridManager.GridQuery.GetColumn(selected);
+        if (selectedColorBlock == null) return;
 
-            HighLightElements(neighbours, true);
+        ToggleNeighbours(KeyCode.O, GridDirections.Orthogonal);
 
-        }
+        ToggleNeighbours(KeyCode.D, GridDirections.Diaognal);
 
-        if (Input.GetKeyUp(keyCode))
-        {
-            List<GridPosition> neighbours = DemoGridManager.GridQuery.GetColumn(selected);
+        ToggleLine(KeyCode.R, DemoGridManager.GridQuery.GetRow);
 
-            HighLightElements(neighbours, false);
-        }
-
+        ToggleLine(KeyCode.C, DemoGridManager.GridQuery.GetColumn);
     }
 
-
-    void HighLightNeighbours(KeyCode keyCode, GridPosition[] direction)
+    private void ToggleNeighbours(KeyCode key, GridPosition[] directions)
     {
-        if (Input.GetKeyDown(keyCode) && selectedColorBlock != null)
+        if (Input.GetKeyDown(key))
         {
-            List<GridPosition> neighbours = DemoGridManager.GridQuery.GetNeighbors(selected, direction);
-
-            HighLightElements(neighbours, true);
-
+            HighlightElements(DemoGridManager.GridQuery.GetNeighbors(selected, directions), true);
         }
-
-        if (Input.GetKeyUp(keyCode))
+        if (Input.GetKeyUp(key))
         {
-            List<GridPosition> neighbours = DemoGridManager.GridQuery.GetNeighbors(selected, direction);
-
-            HighLightElements(neighbours,false);
+            HighlightElements(DemoGridManager.GridQuery.GetNeighbors(selected, directions), false);
         }
     }
 
-
-   void HighLightElements(List<GridPosition> elements,bool highLight)
+    private void ToggleLine(KeyCode key, System.Func<GridPosition, List<GridPosition>> lineFunc)
     {
-        for (int i = 0; i < elements.Count; i++)
+        if (Input.GetKeyDown(key))
         {
-            if(highLight)
-            DemoGridManager.Grid.GetItem(elements[i]).Highlight();
-            else
-
-                DemoGridManager.Grid.GetItem(elements[i]).Normal();
-
+            HighlightElements(lineFunc(selected), true);
+        }
+        if (Input.GetKeyUp(key))
+        {
+            HighlightElements(lineFunc(selected), false);
         }
     }
 
+    private void HighlightElements(List<GridPosition> positions, bool highlight)
+    {
+        foreach (var pos in positions)
+        {
+            if (TryGetBlock(pos, out ColorBlock block))
+            {
+                if (highlight) block.Highlight();
+                else block.Normal();
+            }
+        }
+    }
 
+    #endregion
 }
