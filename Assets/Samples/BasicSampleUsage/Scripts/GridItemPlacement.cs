@@ -10,41 +10,106 @@ public class GridItemPlacement : MonoBehaviour
     [SerializeField] Vector3 origin;
     [SerializeField] ColorBlock colorBlockPrefab;
     [SerializeField] GameObject pointer;
+
     GridSystem<ColorBlock> sampleGrid;
     GridQuery<ColorBlock> gridQuery;
+
+    [SerializeField]List<GridPosition> positionList;
+    
+    [SerializeField] LayerMask IgnoreMask;
+
+
+    ColorBlock selectedColorBlock;
+    GridPosition selected;
+    GridPosition newMovePosition;
+
     private void Start()
     {
 
         sampleGrid = new GridSystem<ColorBlock>(gridWidth,gridHeight,cellSize,origin);
         gridQuery = new GridQuery<ColorBlock>(sampleGrid);
+        for(int i = 0; i < positionList.Count; i++)
+        {
 
+            if (sampleGrid.IsValidPosition(positionList[i]) && sampleGrid.IsEmpty(positionList[i]))
+            {
+
+                ColorBlock obj = Instantiate(colorBlockPrefab, sampleGrid.GridToWorld(positionList[i]), Quaternion.identity);
+                obj.name = "Cube" + positionList[i].ToString();
+                sampleGrid.SetItem(positionList[i], obj);
+
+            }
+        }
     }
 
     private void Update()
     {
+
         if (Input.GetMouseButtonDown(0))
         {
             RaycastHit hit;
 
-            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit))
+
+            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, IgnoreMask))
             {
-                pointer.transform.position = hit.point;
-                GridPosition gridPosition = sampleGrid.WorldToGrid(hit.point,true);
-                Debug.Log(gridPosition.ToString());
+             
+                selected = sampleGrid.WorldToGrid(hit.point, true);
+               // if (!sampleGrid.IsEmpty(selected))
 
-                if (sampleGrid.IsValidPosition(gridPosition)&&sampleGrid.IsEmpty(gridPosition)){
 
-                    ColorBlock obj = Instantiate(colorBlockPrefab, sampleGrid.GridToWorld(gridPosition), Quaternion.identity);
-                    obj.name = "Cube" + gridPosition.ToString();
-                    sampleGrid.SetItem(gridPosition,obj);
-                    
+                if (!sampleGrid.IsEmpty(selected)){
+                    selectedColorBlock = sampleGrid.GetItem(selected);
+                    selectedColorBlock.Highlight();
                 }
-                Debug.Log("Here !");
+                    
+             }
+        }
+
+
+        if (Input.GetMouseButton(0))
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, IgnoreMask))
+            {
+                GridPosition nextGridPosition= sampleGrid.WorldToGrid(hit.point, true);
+
+                if (sampleGrid.IsValidPosition(nextGridPosition))
+                    newMovePosition = nextGridPosition;
+
+                if (selectedColorBlock!=null&&sampleGrid.IsValidPosition(newMovePosition)&&sampleGrid.IsEmpty(newMovePosition))
+                sampleGrid.GetItem(selected).transform.position = sampleGrid.GridToWorld(newMovePosition);
+
+            }
+
+
+         
+        
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+
+            if (selectedColorBlock != null)
+            {
+                Debug.Log("Selected Position  :" + selected.ToString());
+                sampleGrid.GetItem(selected).Normal();
+
+                if (sampleGrid.IsValidPosition(newMovePosition))
+                {
+                    sampleGrid.SetItem(newMovePosition, selectedColorBlock);
+                    sampleGrid.RemoveItem(selected);
+                    Debug.Log("Move Position  :" + newMovePosition.ToString());
+                    selectedColorBlock = null;
+                }
             }
         }
-        if (Input.GetKeyDown(KeyCode.B) ){
+
+        /*
+
+        if (Input.GetKeyDown(KeyCode.B))
+        {
             GridPosition gridPosition = new GridPosition(0, 1);
-           List<GridPosition> neighbours= gridQuery.GetNeighbors(gridPosition,GridDirections.Diaognal);
+            List<GridPosition> neighbours = gridQuery.GetNeighbors(gridPosition, GridDirections.Diaognal);
 
             for (int i = 0; i < neighbours.Count; i++)
             {
@@ -52,12 +117,11 @@ public class GridItemPlacement : MonoBehaviour
                 sampleGrid.RemoveItem(neighbours[i]);
 
                 Destroy(tempColorBlock.gameObject);
-                Debug.Log("Color Block Removed !"+ tempColorBlock.name);
+                Debug.Log("Color Block Removed !" + tempColorBlock.name);
             }
-        
         }
 
-        if (Input.GetKeyDown(KeyCode.A))
+            if (Input.GetKeyDown(KeyCode.A))
         {
             GridPosition gridPosition = new GridPosition(1, 1);
             List<GridPosition> neighbours = gridQuery.GetRow(gridPosition);
@@ -71,6 +135,8 @@ public class GridItemPlacement : MonoBehaviour
             }
 
         }
+
+        */
 
     }
 }

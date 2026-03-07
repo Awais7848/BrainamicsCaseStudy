@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 public enum BlockColor
 {
@@ -16,34 +17,24 @@ public class ColorBlock : MonoBehaviour
 
     [SerializeField]bool MouseSelected;
 
-    [SerializeField] LayerMask IgnoreMask;
-
+    
     private void Awake()
     {
         renderer = GetComponent<MeshRenderer>();
     }
-    private void OnMouseDown()
+   
+
+
+    public void Highlight()
     {
+
         MouseSelected = true;
         renderer.material = selectedMaterial;
-
     }
-    private void OnMouseUp()
+    public void Normal()
     {
         MouseSelected = false;
         renderer.material = normalMaterial;
-    }
-    private void Update()
-    {
-        if (MouseSelected)
-        {
-            RaycastHit hit; transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-           if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit,IgnoreMask))
-            {
-                transform.position =new Vector3( hit.point.x,0.5f,hit.point.y) ;
-            }
-           
-        }
-    }
 
+    }
 }

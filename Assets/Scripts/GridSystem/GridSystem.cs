@@ -42,22 +42,26 @@ public class GridSystem<T>
     }
 
 
-      void DrawLine(Vector3 startPosition, Vector3 endPosition)
+    void DrawLine(Vector3 startPosition, Vector3 endPosition)
     {
         Debug.DrawLine(startPosition, endPosition, Color.black, 100f);
     }
    
+
     public bool IsValidPosition(GridPosition pos)
         => pos.X >= 0 && pos.X < width && pos.Y >= 0 && pos.Y < height;
 
+
     public GridNode<T> GetNode(GridPosition pos)
         => IsValidPosition(pos) ? grid[pos.X, pos.Y] : null;
+
 
     public void SetItem(GridPosition pos, T item)
     {
         if (!IsValidPosition(pos)) return;
         grid[pos.X, pos.Y].SetItem(item);
     }
+
 
     public T GetItem(GridPosition pos)
     {

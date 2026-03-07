@@ -621,6 +621,18 @@ MonoBehaviour:
   origin: {x: 0, y: 0, z: 0}
   colorBlockPrefab: {fileID: 5089363354137842719, guid: 5d9690371fb2eae4cb940944dcdced2a, type: 3}
   pointer: {fileID: 1484683065}
+  positionList:
+  - X: 0
+    Y: 0
+  - X: 1
+    Y: 2
+  - X: 0
+    Y: 3
+  - X: 4
+    Y: 2
+  IgnoreMask:
+    serializedVersion: 2
+    m_Bits: 55
 --- !u!4 &1747541695
 Transform:
   m_ObjectHideFlags: 0

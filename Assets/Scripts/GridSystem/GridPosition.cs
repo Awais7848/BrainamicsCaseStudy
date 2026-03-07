@@ -1,3 +1,5 @@
+
+[System.Serializable]
 public struct GridPosition
 {
     public int X;
