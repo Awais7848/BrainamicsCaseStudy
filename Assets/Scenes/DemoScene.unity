@@ -217,8 +217,8 @@ MonoBehaviour:
   previous: {fileID: 1782106803}
   optionName: {fileID: 214171816}
   options:
-  - Grid (3x3)
-  - Grid (4x4)
+  - Grid (4x5)
+  - Grid (5x5)
   - Grid (6x6)
 --- !u!1 &214171814
 GameObject:
@@ -277,7 +277,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Grid (3x3)
+  m_text: Grid (4x4)
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

@@ -13,14 +13,14 @@ public class GridInteraction : MonoBehaviour
     [SerializeField] GameObject pointer;
     [SerializeField] LayerMask ignoreMask;
 
-    private GridSystem<ColorBlock> grid;
     private ColorBlock selectedColorBlock;
     private GridPosition selected;
     private GridPosition newMovePosition;
 
+    GridSystem<ColorBlock> grid => DemoGridManager.Grid;
+
     private void Start()
     {
-        grid = DemoGridManager.Grid; 
     }
 
     private void Update()
@@ -124,7 +124,7 @@ public class GridInteraction : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonUp(0) && Input.GetKeyUp(KeyCode.LeftAlt)&&selectedColorBlock != null)
+        if (Input.GetMouseButtonUp(0) && Input.GetKey(KeyCode.LeftAlt)&&selectedColorBlock != null)
         {
             selectedColorBlock.Normal();
             if (grid.IsValidPosition(newMovePosition))

@@ -79,28 +79,45 @@ public class DemoGridManager : MonoBehaviour
             GridDebug.Error("No Settings Found For This Index");
             return;
         }
+       instance. ClearAndDestroyAllGridElements();
         instance.currentGridSettings = instance.gridSettings[settingIndex];
         instance.SpawnGrid(instance.currentGridSettings);
 
     }
 
 
-    public void ClearGrid()
+  
+    public void ClearAndDestroyAllGridElements()
     {
-        for (int i = 0; i < sampleGrid.width; i++)
+        if (sampleGrid == null)
         {
-            for(int j=0;j<sampleGrid.height; j++)
-            {
-                GridPosition gridPosition;
-                gridPosition.X = i;
-                gridPosition.Y = j;
-                sampleGrid.RemoveItem(gridPosition);
-
-            }
-
+            GridDebug.Error("Grid not initialized. Cannot clear elements.");
+            return;
         }
-    }
 
+        for (int x = 0; x < sampleGrid.width; x++)
+        {
+            for (int y = 0; y < sampleGrid.height; y++)
+            {
+                GridPosition pos = new GridPosition(x, y);
+
+                if (!sampleGrid.IsEmpty(pos))
+                {
+                    var element = sampleGrid.GetItem(pos); 
+                    if (element != null)
+                    {
+                      
+                          Destroy(element.gameObject);
+                       
+                    }
+
+                    sampleGrid.RemoveItem(pos);
+                }
+            }
+        }
+
+        GridDebug.Log("All grid elements removed and destroyed.");
+    }
 
     #region Gizmos
     private void OnDrawGizmos()
